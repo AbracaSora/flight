@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>机票预订-旅客取票</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/static/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/all.min.css">
+</head>
+
+
+
+<body style="background:#f5f5f5;">
+  <div class="container col-10 p-3" style="margin-top: 6vh;height: 88vh;background-color: white;">
+    <h2 class=" text-center m-2">机票打印</h2>
+    <span class="p-2" style="text-indent: 2em">旅客姓名：{{ uname }} &nbsp;&nbsp;&nbsp;&nbsp; </span>
+    <span class="p-2" id="idcard">身份证：{{ IDCard }} </span>
+
+    {% if uname == '' %}
+      <div class=" p-5 m-5 fs-3 text-center">抱歉，未搜索到该身份证对应的旅客信息</div>
+    {% else %}
+      <div id="ticketForm" class="p-1 mt-2 mb-4" style="height: 74%;    overflow-y: scroll;">
+        <table id=" ticketList" class="table table-striped text-center">
+          <thead>
+            <tr>
+              <th>航班号</th><th>出发地点</th><th>到达地点</th><th>出发时间</th><th>到达时间</th><th>座位类型</th>
+              <th>票价</th><th>已支付</th><th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="tt">
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+    <button class="btn btn-danger mt-2" onclick="window.location.href='/getticket'" style="margin-left:46%; width: 8%;height: 7%;">返回</button>
+
+  </div>
+
+    <div class="modal fade" id="Modal" style="margin-top: 10%">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="mTitle"></h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" id="mBody"></div>
+      </div>
+    </div>
+  </div>
+
+{#  <span id="hid" style='visibility: hidden'>{{ ticket }}</span>#}
+</body>
+<script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</html>
+<script >
+
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+    const csrftoken = getCookie('csrftoken');
+
+    let ticket
+
+
+    function init(){
+        let name="{{ uname }}";
+        if(name !== ""){
+            ticket={{ ticket|safe }};
+            if (ticket.length===0){
+                let tag="<div class=' p-5 m-5 fs-3 text-center'>抱歉，未搜索到您的机票信息</div>"
+                document.getElementById("ticketForm").insertAdjacentHTML("beforeend",tag)
+            }
+            else{
+                for( let i=0;i<ticket.length;i++){
+                    let tag = "<tr style='line-height:36px' ><td>"+ticket[i][0]+ "</td><td>"+ticket[i][1]+
+                        "</td><td>"+ticket[i][2]+ "</td><td>"+ticket[i][3]+ "</td><td>"+ticket[i][4]+
+                        "</td><td>"+ticket[i][5]+ "</td><td>"+ticket[i][6]+ "</td><td>"+ticket[i][7]
+                    if(ticket[i][7]==='是'){
+                        tag += "</td><td><button class='btn btn-primary' type='button' " +
+                            "data-bs-toggle='modal' data-bs-target='#Modal' onclick='getT()' >取票</button></td></tr>";
+                    }
+                    else{
+                        tag += "</td><td><button class='btn btn-success' type='button'" +
+                            "data-bs-toggle='modal' data-bs-target='#Modal' onclick='pay("+i+")'>支付</button></td></tr>";
+                    }
+                    document.getElementById("tt").insertAdjacentHTML("beforeend",tag)
+                }
+            }
+        }
+    }
+    init()
+
+    function pay(index){
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/bill_pay/')
+        xhttp.setRequestHeader("index", ticket[index][0])
+        let id=document.getElementById("idcard").innerHTML.split("：")[1]
+        xhttp.setRequestHeader("ID", id )
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            let mBody = document.getElementById("mBody")
+            document.getElementById("mTitle").innerHTML = '支付结果'
+            if (xhttp.responseText === "")
+                mBody.innerHTML = "支付成功，请刷新界面后取票"
+            else mBody.innerHTML = xhttp.responseText
+        }
+        xhttp.send()
+    }
+
+
+    function getT(){
+        document.getElementById("mTitle").innerHTML="取票结果"
+        document.getElementById("mBody").innerHTML="取票成功，祝您旅途愉快！"
+
+    }
+
+</script>

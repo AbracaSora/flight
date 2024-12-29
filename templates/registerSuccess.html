@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机票预订-旅行社注册</title>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/all.min.css">
+</head>
+<body style="background:#f5f5f5;background: url('/static/image/sky.jpeg')center center no-repeat;background-size: 134%;">
+  <div class="container col-6 p-5" style="opacity: 0.9;  margin-top: 25vh;height: 40vh;background-color: white;box-shadow: 0 0 12px rgba(0,0,0,0.7)">
+    <h3 class="d-block text-center pb-4">您已成功注册旅行社！</h3>
+    <h5 id="name" class="pb-2" >用户名：{{name}}</h5>
+    <h5 id="pwd" class="pb-4">密码：{{pwd}}</h5>
+    <div id="hint">网页将在 5 秒后跳转至登录界面。</div>
+  </div>
+</body>
+<script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+</html>
+
+<script>
+    function count()
+    {
+        let q = 5;
+        let m = setInterval(()=>{
+            q--;
+            if(q!==0){
+                document.getElementById("hint").innerHTML = "网页将在 " + q + " 秒后跳转至登录界面。";
+            }
+            else{
+                  window.location.href="login";
+                  clearInterval(m)
+            }
+        },1000)
+
+    }
+
+    window.onload = () =>{
+        count()
+    }
+</script>

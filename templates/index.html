@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机票预订-用户登录</title>
+  <link rel="stylesheet" type="text/css" href="/static/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+  <style>
+    body {
+      background: url('https://webresource.airchina.com.cn/airchinacms/2/upload/resources/image/900_4096x4096.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+    }
+    header {
+      background-color: transparent; /* 设置背景透明 */
+      box-shadow: none; /* 可选：去掉阴影效果 */
+    }
+    .carousel {
+      display: none; /* 图片轮播已删除 */
+    }
+    #loginForm {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 50px;
+    }
+    #loginWin {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      width: 400px;
+      height: 500px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      right: 250px;
+      margin-top: 0;
+    }
+    #loginWin h3 {
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    header .nav-link {
+        color: #ffffff !important;
+        font-weight: 500;
+    }
+    header .nav-link.active {
+        color: #fff !important; /* 设置点击后的颜色为白色 */
+        background-color: #007bff; /* 点击后的背景色保持为蓝色 */
+    }
+    header .nav-link:hover {
+        color: #808080 !important;
+    }
+    .form-control {
+      border-radius: 50px;
+      padding-left: 40px;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+    .form-check-input {
+      border-radius: 50%;
+    }
+    .btn {
+      border-radius: 50px;
+      padding: 12px;
+      width: 100%;
+      font-weight: bold;
+    }
+    .btn-primary {
+      background-color: #0069d9;
+      border: none;
+    }
+    .btn-light {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+    }
+    .alert {
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!--顶栏-->
+<div class="container">
+  <header class="d-flex justify-content-between align-items-center py-3 mb-4">
+    <a class="d-flex align-items-center mb-3 text-dark text-decoration-none">
+      <i class="fas fa-plane fa-2x"></i><span class="fs-4 ms-3">旅行社机票预订系统</span>
+    </a>
+    <ul class="nav nav-pills">
+      <li class="nav-item"><a href="/login" class="nav-link active">用户登录</a></li>
+      <li class="nav-item"><a href="/register" class="nav-link">旅行社注册</a></li>
+      <li class="nav-item"><a href="/getticket" class="nav-link">旅客取票</a></li>
+    </ul>
+  </header>
+</div>
+<!--顶栏结束-->
+
+<!--整个container-->
+<div class="container" id="loginForm">
+
+  <!--右侧登录块-->
+  <div id="loginWin" class="col-md-4 offset-md-1">
+    <h3 class="text-center mb-4" style="color: black;">登录</h3>
+    <form action="/post_login" method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="userName" class="form-label" style="color: black;"><i class="fas fa-user" style="color: black;"></i> 用户名</label>
+        <input type="text" class="form-control" id="userName" placeholder="请输入用户名" name="uname"
+               value="{{ name }}" autocomplete="off" maxlength="40">
+        <span id="warnmsg1" style="color: red; height: 18px;"></span>
+      </div>
+      <div class="mb-4">
+        <label for="pwd" class="form-label" style="color: black;"><i class="fas fa-lock" style="color: black;"></i> 密码</label>
+        <input type="password" class="form-control" id="pwd" placeholder="请输入密码" name="pwd"
+               autocomplete="off" maxlength="40">
+        <span id="warnmsg2" style="color: red; height: 18px;"></span>
+      </div>
+      <div class="mb-4">
+        <div class="form-check">
+          <input type="radio" class="form-check-input" id="optradio1" name="optradio" value="1" checked>
+          <label class="form-check-label" for="optradio1" style="color: black;">旅行社</label>
+        </div>
+        <div class="form-check">
+          <input type="radio" class="form-check-input" id="optradio2" name="optradio" value="2">
+          <label class="form-check-label" for="optradio2" style="color: black;">管理员</label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">登录</button>
+      <a href="/register" class="btn btn-light mt-3 w-100 text-center">注册</a>
+    </form>
+    {% if error_msg %}
+      <div class="alert alert-danger mt-3 alert-dismissible fade show">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>登录失败！</strong> {{ error_msg }}
+      </div>
+    {% endif %}
+  </div>
+  <!--右侧登录块结束-->
+
+</div>
+<!--整个container结束-->
+
+<script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<!--逻辑函数-->
+<script>
+    function clickLogin() {
+        let flag = true
+        if(document.getElementById("userName").value === '') {
+            document.getElementById("warnmsg1").innerHTML="用户名不得为空"
+            flag = false
+        }
+        else document.getElementById("warnmsg1").innerHTML=""
+        if(document.getElementById("pwd").value === '') {
+            document.getElementById("warnmsg2").innerHTML="密码不得为空"
+            flag = false
+        }
+        else document.getElementById("warnmsg2").innerHTML=""
+        return flag
+    }
+</script>
+
+</body>
+</html>
+
+

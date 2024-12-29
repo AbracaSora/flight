@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>机票预订-旅行社注册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/all.min.css">
+    <style>
+        body {
+            background: #f0f4f8;
+            font-family: 'Arial', sans-serif;
+        }
+        header {
+            padding: 10px 0;
+        }
+        header .text-dark {
+            color: #fff;
+        }
+        header .nav-link {
+            color: #007bff !important;
+            font-weight: 500;
+        }
+        header .nav-link:hover {
+            color: #00008B !important;
+        }
+        header .nav-link.active {
+            color: #fff !important; /* 设置点击后的颜色为白色 */
+            background-color: #007bff; /* 点击后的背景色保持为蓝色 */
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h3 {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .form-container .form-label {
+            font-weight: 500;
+        }
+        .form-container .form-control {
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .form-container .form-control:focus {
+            border-color: #007bff;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .error-msg {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom" >
+      <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <i class="fas fa-plane fa-2x"></i><span class="fs-4 ms-5">旅行社机票预订系统</span>
+      </a>
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="/login" class="nav-link" >用户登录</a></li>
+        <li class="nav-item"><a href="/register" class="nav-link active" aria-current="page">旅行社注册</a></li>
+        <li class="nav-item"><a href="/getticket" class="nav-link">旅客取票</a></li>
+      </ul>
+    </header>
+  </div>
+  <div class="form-container col-6 offset-3">
+    <h3 class="text-center">旅行社注册</h3>
+    <form action="/post_registerT" method="post">
+      {% csrf_token %}
+      <input type="text" style="visibility: hidden" name="opt" value="1" disabled>
+      <div class="mb-3">
+        <label class="form-label" for="nameI">输入用户名</label>
+        <input type="text" placeholder="2~40位" class="form-control" maxlength="40" id="nameI" name="uname" autocomplete="off" onblur="checkname()">
+        <span id="warnmsg1" class="error-msg"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="pwdI">输入密码</label>
+        <input type="password" placeholder="8~40位，至少含有字母和数字" class="form-control" maxlength="40" id="pwdI" name="pwd" autocomplete="off" onblur="checkpwd()">
+        <span id="warnmsg2" class="error-msg"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="pwd2I">确认密码</label>
+        <input type="password" placeholder="两次保持一致" class="form-control" maxlength="40" id="pwd2I" autocomplete="off" onblur="checkpwd2()">
+        <span id="warnmsg3" class="error-msg"></span>
+      </div>
+      <span class="error-msg">{{error_msg}}</span>
+      <button class="btn btn-primary col-4 offset-4" type="submit" onclick="return check()">注册</button>
+    </form>
+  </div>
+
+  <script src="/static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function checkname() {
+        if(document.getElementById('nameI').value === '') {
+            document.getElementById("warnmsg1").innerHTML = "用户名不得为空";
+        } else if(document.getElementById('nameI').value.length < 2) {
+            document.getElementById("warnmsg1").innerHTML = "用户名要求2~40位";
+        } else {
+            document.getElementById("warnmsg1").innerHTML = "";
+        }
+    }
+
+    function checkpwd() {
+        if(document.getElementById('pwdI').value === '') {
+            document.getElementById("warnmsg2").innerHTML = "密码不得为空";
+        } else if(document.getElementById('pwdI').value.length < 8) {
+            document.getElementById("warnmsg2").innerHTML = "密码要求8~40位";
+        } else {
+            let passwd = document.getElementById('pwdI').value;
+            let letter = false, number = false;
+            for(let i = 0; i < passwd.length; i++) {
+                if(letter && number) break;
+                if(!isNaN(Number(passwd[i]))) number = true;
+                else if((passwd[i]>='a'&&passwd[i]<='z')||(passwd[i]>='A'&&passwd[i]<='Z')) letter = true;
+            }
+            if(letter && number)
+                document.getElementById("warnmsg2").innerHTML = "";
+            else
+                document.getElementById("warnmsg2").innerHTML = "需要包含字母和数字两种字符";
+        }
+    }
+
+    function checkpwd2() {
+        if(document.getElementById('pwd2I').value !== document.getElementById('pwdI').value) {
+            document.getElementById("warnmsg3").innerHTML = "两次密码输入不同";
+        } else {
+            document.getElementById("warnmsg3").innerHTML = "";
+        }
+    }
+
+    function check() {
+        let flag = true;
+        if(document.getElementById('nameI').value === '') {
+            flag = false;
+            document.getElementById("warnmsg1").innerHTML = "用户名不得为空";
+        } else if(document.getElementById('nameI').value.length < 2) {
+            document.getElementById("warnmsg1").innerHTML = "用户名要求2~40位";
+            flag = false;
+        } else {
+            document.getElementById("warnmsg1").innerHTML = "";
+        }
+
+        if(document.getElementById('pwdI').value === '') {
+            flag = false;
+            document.getElementById("warnmsg2").innerHTML = "密码不得为空";
+        } else if(document.getElementById('pwdI').value.length < 8) {
+            document.getElementById("warnmsg2").innerHTML = "密码要求8~40位";
+            flag = false;
+        } else {
+            let passwd = document.getElementById('pwdI').value;
+            let letter = false, number = false;
+            for(let i = 0; i < passwd.length; i++) {
+                if(letter && number) break;
+                if(!isNaN(Number(passwd[i]))) number = true;
+                else if((passwd[i]>='a'&&passwd[i]<='z')||(passwd[i]>='A'&&passwd[i]<='Z')) letter = true;
+            }
+            if(letter && number)
+                document.getElementById("warnmsg2").innerHTML = "";
+            else {
+                document.getElementById("warnmsg2").innerHTML = "需要包含字母和数字两种字符";
+                flag = false;
+            }
+        }
+
+        if(document.getElementById('pwd2I').value !== document.getElementById('pwdI').value) {
+            document.getElementById("warnmsg3").innerHTML = "两次密码输入不同";
+            flag = false;
+        } else {
+            document.getElementById("warnmsg3").innerHTML = "";
+        }
+        return flag;
+    }
+  </script>
+</body>
+</html>
+

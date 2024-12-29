@@ -1,0 +1,29 @@
+#loginForm{
+    height:82vh;
+    margin-top: 7vh;
+}
+
+#loginWin{
+    padding: 30px;
+    height: 520px;
+    display: inline-block;
+    position: absolute;
+    background-color: white;
+}
+
+
+#loginBg{
+    display: inline-block;
+    height: 400px;
+}
+
+
+.hide{
+    visibility: hidden;
+}
+
+
+a {
+    text-decoration: none;
+    color: black;
+}

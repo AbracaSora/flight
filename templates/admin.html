@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机票预订-管理员-{{ name }}</title>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/all.min.css">
+</head>
+<body style="background:#f5f5f5;">
+
+<div id="navLeft" class="bg-primary">
+    <div class="pt-3 ms-2 me-2 pb-2 text-white border-bottom">
+        <i class="fas fa-plane fa-2x"></i><br>
+        <div class="fs-3 ms-2 me-4 mt-2" style="font-family:'Fangsong', 'Courier New', Courier, monospace;">旅行社机票预订系统
+        </div>
+        <div class=" mt-4 ms-3 fs-5 me-3 word">您好，{{ name }}</div>
+
+    </div>
+
+    <div id="accordion" class="nav " style="background-color: rgba(0,0,0,0.06)">
+        <div class="card cardS ms-2 pt-2 pt-2  me-2">
+            <div class="card-header">
+                <a class="nav-link" data-bs-toggle="collapse" href="#collapse1">
+                    <i class="far fa-address-book me-3 text-white navI"></i>航班</a>
+            </div>
+            <div id="collapse1" class="collapse me-4 text-end pb-1" data-bs-parent="#navLeft">
+                <a class="opt p-1 mb-1" data-bs-toggle="pill" href="#getFlight" style="font-size: 18px"
+                   onclick="flight_print()">查看航班</a>
+                <a class="opt p-1  mb-1" style="font-size: 18px" data-bs-toggle="pill" href="#addFlight">添加航班</a>
+            </div>
+
+        </div>
+
+        <div class="card cardS ms-2 pt-2 pt-2  me-2">
+            <div class="card-header">
+                <a class="nav-link" data-bs-toggle="collapse" href="#collapse2">
+                    <i class="fas fa-file-invoice-dollar me-3 text-white navI"></i>订单</a>
+            </div>
+            <div id="collapse2" class="collapse me-4 text-end pb-1" data-bs-parent="#navLeft">
+                <a class="opt p-1 mb-1" data-bs-toggle="pill" href="#getBill" style="font-size: 18px"
+                   onclick="bill_print()">查看订单</a>
+                <div class="opt p-1 mb-1" data-bs-toggle="pill" href="#addBill" style="font-size: 18px">添加订单</div>
+            </div>
+        </div>
+        <div class="card cardS ms-2 pt-2 pt-2 me-2">
+            <div class="card-header">
+                <a class="nav-link" data-bs-toggle="collapse" href="#collapse3">
+                    <i class="far fa-user me-3 text-white navI"></i>账号</a>
+            </div>
+            <div id="collapse3" class="collapse me-4 text-end pb-1" data-bs-parent="#navLeft">
+                <a class="opt p-1 mb-1 " data-bs-toggle="pill" href="#regisAdmin" style="font-size: 18px">管理员注册</a>
+                <a class="opt p-1 mb-1 " data-bs-toggle="pill" href="#changePwd" style="font-size: 18px">修改密码</a>
+                <div class="opt p-1 mb-1" onclick="logout()" style="font-size: 18px">退出登录</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="rightWin">
+    <div class="tab-content m-5">
+        <div id="changePwd" class="container tab-pane fade bg-white pt-2 pb-2 ps-4 pe-4"
+             style="margin-top: 8%; margin-left: 20%;width: 60%;"><br>
+            <h4 class=" mb-4 text-center" style="display: inline-block;width:100%;">修改密码</h4>
+            <div class="mb-2 mb-3">
+                <label class="form-label mb-1" for="pwd0I">输入原密码</label>
+                <input type="password" class="form-control" maxlength="40" id="pwd0I" name="opwd"
+                       autocomplete="off">
+            </div>
+            <div class="mb-2  mb-3">
+                <label class="form-label mb-1" for="pwdI">输入新密码</label>
+                <input type="password" placeholder="8~40位，至少含有数字和密码" class="form-control" maxlength="40" id="pwdI"
+                       name="npwd"
+                       autocomplete="off">
+            </div>
+            <div class="mb-1  mb-3">
+                <label class="form-label mb-1" for="pwd2I">确认新密码</label>
+                <input type="password" placeholder="两次保持一致" class="form-control" maxlength="40" id="pwd2I"
+                       autocomplete="off">
+            </div>
+            <button data-bs-toggle="modal" data-bs-target="#Modal" type="button" class="mt-2 mb-4 btn btn-primary  col-4
+        offset-4" onclick="changepwd()">提交
+            </button>
+        </div>
+        <div id="getFlight" class="container tab-pane fade bg-white" style="margin-left: 10%; width: 80%;">
+            <h4 class="mt-3 mb-3 text-center" style="display: inline-block;width:100%;">查看航班</h4>
+            <div id="flightForm" style="height: 80vh;overflow-y: scroll;">
+                <table id="flightList" class="table table-striped text-center">
+                    <thead>
+                    <tr>
+                        <th>航班号</th>
+                        <th>出发地</th>
+                        <th>目的地</th>
+                        <th>起飞时间</th>
+                        <th>抵达时间</th>
+                        <th>选项</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tt3">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="addFlight" class="container tab-pane fade bg-white" style="margin-left: 10%; width: 80%;">
+            <div id="chflw" class="p-4">
+                <h3 class=""></h3>
+                <div class="mb-3 d-inline-block" style=" width: 47%">
+                    <label for="addFlightI">添加的航班号</label>
+                    <input class="form-control" type="text" value="" name="addFlightI" id="addFlightI"
+                           autocomplete="off">
+                </div>
+                <br>
+                <div class="d-inline-block me-4 mb-3" style="width: 47%">
+                    <label for="addFlightI2">出发地</label>
+                    <input class="form-control" type="text" value="" name="addFlightI2" id="addFlightI2"
+                           autocomplete="off">
+                </div>
+                <div class="d-inline-block mb-3" style="width: 47%">
+                    <label for="addFlightI3">目的地</label>
+                    <input class="form-control" type="text" value="" name="addFlightI3" id="addFlightI3"
+                           autocomplete="off">
+                </div>
+                <div class="d-inline-block me-4 mb-3" style="width: 47%">
+                    <label for="addFlightI4">起飞时间</label><br>
+                    <div class="d-inline-block me-3" style="width: 53%">
+                        <input class="form-control" type="date" value="" name="addFlightI4" id="addFlightI4"
+                               autocomplete="off">
+                    </div>
+                    <div class="d-inline-block" style="width: 41%">
+                        <input class="form-control" type="time" value="" name="addFlightI5" id="addFlightI5"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="d-inline-block mb-3" style="width: 47%">
+                    <label for="addFlightI6">抵达时间</label><br>
+                    <div class="d-inline-block me-3" style="width: 53%">
+                        <input class="form-control" type="date" value="" name="addFlightI6" id="addFlightI6"
+                               autocomplete="off">
+                    </div>
+                    <div class="d-inline-block" style="width: 41%">
+                        <input class="form-control" type="time" value="" name="addFlightI7" id="addFlightI7"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="container mt-3">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                        <tr>
+                            <th></th>
+                            <th>头等舱</th>
+                            <th>商务舱</th>
+                            <th>经济舱</th>
+                        </tr>
+                        </thead>
+                        <tbody onkeydown="return checkNumber(event.which)">
+                        <tr>
+                            <td class="fw-bold table-light">票价</td>
+                            <td contenteditable="true">0</td>
+                            <td contenteditable="true">0</td>
+                            <td contenteditable="true">0</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold table-light">总座位数</td>
+                            <td contenteditable="true">0</td>
+                            <td contenteditable="true">0</td>
+                            <td contenteditable="true">0</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold table-light">剩余座位数</td>
+                            <td contenteditable="true">0</td>
+                            <td contenteditable="true">0</td>
+                            <td contenteditable="true">0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button class="mt-4 col-2 offset-5 btn btn-primary" data-bs-target="#Modal" data-bs-toggle="modal"
+                            onclick="add_flight()">提交
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="regisAdmin" class="container tab-pane fade bg-white p-4 "
+             style="margin-top: 8%; margin-left: 20%;width: 60%;">
+            <h3 class="mt-2 mb-4 text-center" style="display: inline-block;width:100%;">管理员注册</h3>
+            <input type="text" style="visibility: hidden" name="opt" value="2" disabled>
+            <div class="mb-3">
+                <label class="form-label mb-1" for="anameI">输入用户名</label>
+                <input type="text" placeholder="2~40位" class="form-control" maxlength="40" id="anameI" name="uname"
+                       autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label class="form-label mb-1" for="apwdI">输入密码</label>
+                <input type="password" placeholder="8~40位，至少含有字母和数字" class="form-control" maxlength="40" id="apwdI"
+                       name="pwd" autocomplete="off">
+            </div>
+            <div class="mb-4">
+                <label class="form-label mb-1" for="apwdI">确认密码</label>
+                <input type="password" placeholder="两次保持一致" class="form-control" maxlength="40" id="apwd2I"
+                       autocomplete="off">
+            </div>
+            <button class="mt-2 btn btn-primary  col-2 offset-5" type="submit" onclick="return check()"
+                    data-bs-target="#Modal" data-bs-toggle="modal">注册
+            </button>
+        </div>
+        <div id="getBill" class="container tab-pane fade bg-white">
+            <h4 class="mt-3 mb-3 text-center" style="display: inline-block;width:100%;">查看机票订单</h4>
+            <div id="billForm" style="height: 80vh;overflow-y: scroll;">
+                <table id="billList" class="table table-striped text-center">
+                    <thead>
+                    <tr>
+                        <th>航班号</th>
+                        <th>姓名</th>
+                        <th>身份证</th>
+                        <th>地点</th>
+                        <th>时间</th>
+                        <th>座位类型</th>
+                        <th>票价</th>
+                        <th>已支付</th>
+                        <th>选项</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tt5">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="addBill" class="container tab-pane fade bg-white"
+             style="margin-left: 10%;margin-top: 10%; width: 80%;">
+            <div id="chbiw" class="pe-5 ps-5 pt-4 pb-4">
+                <h4 class="mt-3 mb-4 text-center" style="display: inline-block;width:100%;">添加机票订单</h4>
+                <div class="mb-3 me-4 d-inline-block" style=" width: 47%">
+                    <label for="bill3I">航班号</label>
+                    <input class="form-control" type="text" value="" name="bill3I" id="bill3I" autocomplete="off">
+                </div>
+                <div class="d-inline-block mb-3" style="width: 47%">
+                    <label for="bill3I2">身份证</label>
+                    <input class="form-control" placeholder="18位数字，允许最后一位为X" maxlength="18"
+                           type="text" value="" name="bill3I2" id="bill3I2" autocomplete="off">
+                </div>
+                <div class="d-inline-block mb-3 me-4" style="width: 47%">
+                    <label for="bill3I3">座位类型</label>
+                    <select class="form-select" name="bill3I3" id="bill3I3">
+                        <option value="头等舱" id="bill3itd">头等舱</option>
+                        <option value="商务舱" id="bill3sw">商务舱</option>
+                        <option value="经济舱" id="bill3jj">经济舱</option>
+                    </select>
+                </div>
+                <div class="d-inline-block mb-3" style="width: 35%">
+                    <label for="bill3I4" class="me-4">已支付</label>
+                    <div class="d-inline-block me-3" style="width: 53%">
+                        <label for="bill3I4">是</label>
+                        <input class="me-3 form-check-input" type="radio" value="是" name="bill3I4" id="bill3I4">
+                        <label for="bill3I5">否</label>
+                        <input type="radio" class="form-check-input" value="否" name="bill3I4" id="bill3I5" checked>
+                    </div>
+                </div>
+                <button class="mt-4 col-2 offset-5 btn btn-primary" data-bs-target="#Modal" data-bs-toggle="modal"
+                        onclick="add_bill()">提交
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="Modal" style="margin-top: 10%">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mTitle"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="mBody"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="flightM">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content" id="mcontent">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mTitle2"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="mBody2">
+                <table id="flightList" class="table table-striped text-center">
+                    <thead id='tt5'>
+                    <tr>
+                        <th>航班号</th>
+                        <th>座位类型</th>
+                        <th>票价</th>
+                        <th>总座位数</th>
+                        <th>剩余座位数</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tt4">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="flightM3">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content" id="mcontent3">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mTitle3">修改航班</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body ps-4 pe-4 pt-2 pb-2" id="mBody3">
+                <div id="chflf">
+                    <div class="mb-3 d-inline-block" style=" width: 40%;margin-left: 30%">
+                        <label for="flight3I">修改的航班号</label>
+                        <input class="form-control" type="text" value="" name="flight3I" id="flight3I" disabled>
+                    </div>
+                    <div class="d-inline-block me-4 mb-3" style="width: 47%">
+                        <label for="flight3I2">出发地</label>
+                        <input class="form-control" type="text" value="" name="flight3I2" id="flight3I2"
+                               autocomplete="off">
+                    </div>
+                    <div class="d-inline-block mb-3" style="width: 47%">
+                        <label for="flight3I3">目的地</label>
+                        <input class="form-control" type="text" value="" name="flight3I3" id="flight3I3"
+                               autocomplete="off">
+                    </div>
+                    <div class="d-inline-block me-4 mb-3" style="width: 47%">
+                        <label for="flight3I4">起飞时间</label><br>
+                        <div class="d-inline-block me-3" style="width: 53%">
+                            <input class="form-control" type="date" value="" name="flight3I4" id="flight3I4"
+                                   autocomplete="off">
+                        </div>
+                        <div class="d-inline-block" style="width: 40%">
+                            <input class="form-control" type="time" value="" name="flight3I5" id="flight3I5"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="d-inline-block mb-3" style="width: 47%">
+                        <label for="flight3I6">抵达时间</label><br>
+                        <div class="d-inline-block me-3" style="width: 53%">
+                            <input class="form-control" type="date" value="" name="flight3I6" id="flight3I6"
+                                   autocomplete="off">
+                        </div>
+                        <div class="d-inline-block" style="width: 40%">
+                            <input class="form-control" type="time" value="" name="flight3I7" id="flight3I7"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="container mt-3">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                            <tr>
+                                <th></th>
+                                <th>头等舱</th>
+                                <th>商务舱</th>
+                                <th>经济舱</th>
+                            </tr>
+                            </thead>
+                            <tbody onkeydown="return checkNumber(event.which)">
+                            <tr>
+                                <td class="fw-bold table-light">票价</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold table-light">总座位数</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold table-light">剩余座位数</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary " onclick="change_flight2()" data-bs-dismiss="modal">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="bill2M">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content" id="mcontent4">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mTitle4">修改订单</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body ps-4 pe-4 pt-2 pb-2" id="mBody4">
+                <div id="chbif">
+                    <div class="mb-3 me-4 d-inline-block" style=" width: 47%">
+                        <label for="bill2I">航班号</label>
+                        <input class="form-control" type="text" value="" name="bill2I" id="bill2I" disabled>
+                    </div>
+                    <div class="d-inline-block mb-3" style="width: 47%">
+                        <label for="bill2I2">身份证</label>
+                        <input class="form-control" type="text" value="" name="bill2I2" id="bill2I2" disabled>
+                    </div>
+                    <div class="d-inline-block mb-3 me-4" style="width: 47%">
+                        <label for="bill2I3">座位类型</label>
+                        <select class="form-select" name="bill2I3" id="bill2I3">
+                            <option value="头等舱" id="billitd">头等舱</option>
+                            <option value="商务舱" id="billsw">商务舱</option>
+                            <option value="经济舱" id="billjj">经济舱</option>
+                        </select>
+                    </div>
+                    <div class="d-inline-block mb-3" style="width: 35%">
+                        <label for="bill2I4" class="me-4">已支付</label>
+                        <div class="d-inline-block me-3" style="width: 53%">
+                            <label for="bill2I4">是</label>
+                            <input class="me-3 form-check-input" type="radio" value="是" name="bill2I4" id="bill2I4"
+                                   checked>
+                            <label for="bill2I5">否</label>
+                            <input type="radio" class="form-check-input" value="否" name="bill2I4" id="bill2I5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="change_bill2()" data-bs-dismiss="modal">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+{#<script src="/static/js/admin1.js"></script>#}
+
+</body>
+</html>
+
+
+<style>
+    body {
+        background: #e9ecef;
+    }
+
+    #navLeft {
+        position: absolute;
+        left: 0;
+        width: 220px;
+        height: 100%;
+        border-right: 2px solid #007bff;
+    }
+
+    #rightWin {
+        position: absolute;
+        left: calc(220px + 2%);
+        width: calc(96% - 220px);
+        height: 100%;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    #accordion {
+        display: block;
+    }
+
+    .navI {
+        width: 30px !important;
+    }
+
+    .nav-link, .opt {
+    color: #ffffff !important;  /* 确保文字为白色 */
+    text-decoration: none !important;  /* 移除下划线 */
+    }
+
+    .nav-link:hover, .opt:hover {
+        color: rgba(255, 255, 255, 0.8) !important;  /* 悬停时为淡白色 */
+    }
+
+    .cardS {
+        background-color: transparent !important;
+        color: #ffffff;
+        margin: 10px 0;
+        font-size: 18px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .cardS:hover {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+        color: rgba(255, 255, 255, 0.8); !important;
+    }
+
+    .opt {
+        display: block;
+        color: #ffffff;  /* 设置正常情况下的文本颜色为白色 */
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background-color 0.3s, color 0.3s;
+        text-decoration: none;  /* 移除下划线 */
+        text-align: center;  /* 水平居中 */
+    }
+
+    .opt:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: rgba(255, 255, 255, 0.8);  /* 悬停时颜色稍微暗淡一点的白色 */
+    }
+
+    .word {
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow: hidden;
+    }
+
+    h4 {
+        color: #0d6efd;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        border-radius: 0.25rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .table {
+        background-color: #ffffff;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .mt-2, .mb-2, .mt-5, .mb-5 {
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+
+
+<script>
+    let billP, flightP, seatP
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+    const csrftoken = getCookie('csrftoken');
+
+
+    function logout() {
+        window.location.href = '/logout'
+    }
+
+
+    function changepwd() {
+        let mBody = document.getElementById("mBody")
+        document.getElementById("mTitle").innerHTML = "密码修改结果"
+        if (document.getElementById('pwd0I').value === '') {
+            mBody.innerHTML = "原密码不得为空"
+            return
+        }
+        if (document.getElementById('pwdI').value === '') {
+            mBody.innerHTML = "新密码不得为空 "
+            return
+        } else if (document.getElementById('pwdI').value.length < 8) {
+            mBody.innerHTML = "密码要求8~40位"
+            return
+        } else {
+            let passwd = document.getElementById('pwdI').value
+            let letter = false, number = false
+            for (let i = 0; i < passwd.length; i++) {
+                if (letter && number) break
+                if (!isNaN(Number(passwd[i])))
+                    number = true
+                else if (passwd[i] >= 'a' && passwd[i] <= 'z' || passwd[i] >= 'A' && passwd[i] <= 'Z')
+                    letter = true
+            }
+            if (letter && number)
+                mBody.innerHTML = ""
+            else {
+                mBody.innerHTML = "需要包含字母和数字两种字符"
+                return
+            }
+        }
+        if (document.getElementById('pwd2I').value !== document.getElementById('pwdI').value) {
+            mBody.innerHTML = "两次密码输入不同"
+            return
+        }
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/post_changepwd')
+        xhttp.setRequestHeader("opwd", document.getElementById('pwd0I').value)
+        xhttp.setRequestHeader("npwd", document.getElementById('pwdI').value)
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                if (xhttp.responseText === '')
+                    mBody.innerHTML = "密码修改成功"
+                else mBody.innerHTML = xhttp.responseText
+            }
+        }
+        xhttp.send()
+
+    }
+
+
+    function flight_print() {
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/flight_print')
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                flightP = xhttp.responseText.split(';')
+                document.getElementById("tt3").innerHTML = ""
+                if (document.getElementById("flightI") != null)
+                    document.getElementById("flightI").remove()
+                if (flightP.length <= 1) {
+                    let tag = "<div id='flightI' class=' p-5 m-5 fs-3 text-center'>未搜索到航班信息</div>"
+                    document.getElementById("flightForm").insertAdjacentHTML("beforeend", tag)
+                } else {
+                    for (let i = 0; i < flightP.length / 5; i++) {
+                        let tag = "<tr style='line-height:36px' ><td>" + flightP[5 * i] + "</td><td>" + flightP[5 * i + 1] +
+                            "</td><td>" + flightP[5 * i + 2] + "</td><td>" + flightP[5 * i + 3] + "</td><td>" + flightP[5 * i + 4] +
+                            "</td><td><button class='btn btn-primary me-2' data-bs-toggle='modal' data-bs-target='#flightM' " +
+                            "onclick='seat_print(" + i + ")' >详情</button><button class='btn btn-warning me-2' data-bs-toggle='modal' " +
+                            "data-bs-target='#flightM3' onclick='change_flight(" + i + ")' >修改</button><button class='btn btn-danger' " +
+                            "onclick='del_flight(" + i + ")' data-bs-toggle='modal' data-bs-target='#Modal' >删除</button></td></tr>"
+                        document.getElementById("tt3").insertAdjacentHTML("beforeend", tag)
+                    }
+                }
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function seat_print(index) {
+        document.getElementById("mTitle2").innerHTML = "航班" + flightP[5 * index] + "详情"
+        document.getElementById("tt5").innerHTML = "<tr><th>航班号</th><th>舱位类型</th><th>票价</th><th>总座位数</th><th>剩余座位数</th></tr>"
+        document.getElementById("tt4").innerHTML = ""
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/seat_print')
+        xhttp.setRequestHeader("flight", flightP[5 * index])
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                seatP = xhttp.responseText.split(';')
+                if (document.getElementById("mI2") != null)
+                    document.getElementById("mI2").remove()
+                if (seatP.length <= 1) {
+                    let tag = "<div id='mI2' class=' p-5 m-5 fs-3 text-center'>未搜索到座位信息</div>"
+                    document.getElementById("mBody2").insertAdjacentHTML("beforeend", tag)
+                } else {
+                    for (let i = 0; i < seatP.length / 4; i++) {
+                        let tag = "<tr style='line-height:36px' ><td>" + flightP[5 * index] + "</td><td>" +
+                            seatP[4 * i] + "</td><td>" + seatP[4 * i + 1] + "</td><td>" + seatP[4 * i + 2] + "</td><td>" + seatP[4 * i + 3] + "</td>"
+                        document.getElementById("tt4").insertAdjacentHTML("beforeend", tag)
+                    }
+                }
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function change_flight(index) {
+        document.getElementById("flight3I").value = flightP[5 * index]
+        document.getElementById("flight3I2").value = flightP[5 * index + 1]
+        document.getElementById("flight3I2").placeholder = flightP[5 * index + 1]
+        document.getElementById("flight3I3").value = flightP[5 * index + 2]
+        document.getElementById("flight3I3").placeholder = flightP[5 * index + 2]
+        document.getElementById("flight3I4").value = flightP[5 * index + 3].split(' ')[0]
+        document.getElementById("flight3I5").value = flightP[5 * index + 3].split(' ')[1]
+        document.getElementById("flight3I6").value = flightP[5 * index + 4].split(' ')[0]
+        document.getElementById("flight3I7").value = flightP[5 * index + 4].split(' ')[1]
+        document.getElementById("chflf").classList.remove("hide")
+        seatP = null
+        seat_print(index)
+        let wait = setInterval(() => {
+            if (seatP != null) {
+                let target = document.getElementById("mBody3").getElementsByTagName("td")
+                for (let i = 0; i < 3; i++) {
+                    if (seatP[4 * i] === "头等舱") {
+                        target[1].innerHTML = seatP[4 * i + 1]
+                        target[5].innerHTML = seatP[4 * i + 2]
+                        target[9].innerHTML = seatP[4 * i + 3]
+                    } else if (seatP[4 * i] === "商务舱") {
+                        target[2].innerHTML = seatP[4 * i + 1]
+                        target[6].innerHTML = seatP[4 * i + 2]
+                        target[10].innerHTML = seatP[4 * i + 3]
+                    } else {
+                        target[3].innerHTML = seatP[4 * i + 1]
+                        target[7].innerHTML = seatP[4 * i + 2]
+                        target[11].innerHTML = seatP[4 * i + 3]
+                    }
+                }
+                clearInterval(wait)
+            }
+        }, 50)
+
+    }
+
+
+    function change_flight2() {
+        let flag = false
+        if (document.getElementById("flight3I").value === "")
+            flag = true
+        else if (document.getElementById("flight3I2").value === "")
+            flag = true
+        else if (document.getElementById("flight3I3").value === "")
+            flag = true
+        else if (document.getElementById("flight3I4").value === "")
+            flag = true
+        else if (document.getElementById("flight3I5").value === "")
+            flag = true
+        else if (document.getElementById("flight3I6").value === "")
+            flag = true
+        else if (document.getElementById("flight3I7").value === "")
+            flag = true
+        let target = document.getElementById("mBody3").getElementsByTagName("td")
+        for (let i = 0; i < target.length; i++) {
+            if (target[i].innerHTML === "")
+                flag = true
+        }
+        if (flag) {
+            setTimeout(() => {
+                let tag = "<div class='alert fade show alert-danger alert-dismissible' ><button type='button' class='btn-close'" +
+                    " data-bs-dismiss='alert'></button><strong>修改失败，有内容为空！</strong></div>"
+                document.getElementById("flightForm").insertAdjacentHTML('beforebegin', tag)
+            }, 400)
+            return
+        }
+        for (let i = 0; i < 3; i++) {
+            if (target[9 + i] > target[5 + i]) {
+                setTimeout(() => {
+                    let tag = "<div class='alert fade show alert-danger alert-dismissible' ><button type='button' class='btn-close'" +
+                        " data-bs-dismiss='alert'></button><strong>修改失败，剩余座位数不得少于总座位数！</strong></div>"
+                    document.getElementById("flightForm").insertAdjacentHTML('beforebegin', tag)
+                }, 400)
+                return
+            }
+        }
+        if (document.getElementById("flight3I6").value < document.getElementById("flight3I4").value) {
+            setTimeout(() => {
+                let tag = "<div class='alert fade show alert-danger alert-dismissible' ><button type='button' class='btn-close'" +
+                    " data-bs-dismiss='alert'></button><strong>修改失败，抵达时间不得早于起飞时间！</strong></div>"
+                document.getElementById("flightForm").insertAdjacentHTML('beforebegin', tag)
+            }, 400)
+            return
+        } else if (document.getElementById("flight3I6").value === document.getElementById("flight3I4").value) {
+            if (document.getElementById("flight3I7").value < document.getElementById("flight3I5").value) {
+                setTimeout(() => {
+                    let tag = "<div class='alert fade show alert-danger alert-dismissible' ><button type='button' class='btn-close'" +
+                        " data-bs-dismiss='alert'></button><strong>修改失败，抵达时间不得早于起飞时间！</strong></div>"
+                    document.getElementById("flightForm").insertAdjacentHTML('beforebegin', tag)
+                }, 400)
+                return
+            }
+        }
+
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/change_flight')
+        let msg = document.getElementById("flight3I").value
+        for (let i = 2; i <= 7; i++) {
+            msg += ";" + document.getElementById("flight3I" + i).value
+        }
+        for (let i = 1; i < 12; i++) {
+            if (i % 4 === 0) continue
+            msg += ';' + target[i].innerHTML
+        }
+        console.info(encodeURIComponent(msg))
+        xhttp.setRequestHeader("msg", encodeURIComponent(msg))
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                document.getElementById("mTitle").innerHTML = '航班修改结果'
+                if (xhttp.responseText === "") {
+                    setTimeout(() => {
+                        let tag = "<div class='alert fade show alert-success alert-dismissible' ><button type='button' class='btn-close'" +
+                            " data-bs-dismiss='alert'></button><strong>航班修改成功，立即刷新界面更新内容！</strong></div>"
+                        document.getElementById("flightForm").insertAdjacentHTML('beforebegin', tag)
+                    }, 200)
+                } else {
+                    setTimeout(() => {
+                        let tag = "<div class='alert fade show alert-danger alert-dismissible' ><button type='button' class='btn-close'" +
+                            " data-bs-dismiss='alert'></button><strong>修改失败，" + xhttp.responseText + "</strong></div>"
+                        document.getElementById("flightForm").insertAdjacentHTML('beforebegin', tag)
+                    }, 200)
+                }
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function del_flight(index) {
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/del_flight')
+        xhttp.setRequestHeader("flight", flightP[5 * index])
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                let mBody = document.getElementById("mBody")
+                document.getElementById("mTitle").innerHTML = '航班删除结果'
+                if (xhttp.responseText === "")
+                    mBody.innerHTML = "航班删除成功"
+                else mBody.innerHTML = xhttp.responseText
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function add_flight() {
+        document.getElementById("mTitle").innerHTML = "航班添加结果"
+        let flag = false
+        if (document.getElementById("addFlightI").value === "")
+            flag = true
+        else if (document.getElementById("addFlightI2").value === "")
+            flag = true
+        else if (document.getElementById("addFlightI3").value === "")
+            flag = true
+        else if (document.getElementById("addFlightI4").value === "")
+            flag = true
+        else if (document.getElementById("addFlightI5").value === "")
+            flag = true
+        else if (document.getElementById("addFlightI6").value === "")
+            flag = true
+        else if (document.getElementById("addFlightI7").value === "")
+            flag = true
+        let target = document.getElementById("chflw").getElementsByTagName("td")
+        for (let i = 0; i < target.length; i++) {
+            if (target[i].innerHTML === "") {
+                flag = true
+                break
+            }
+        }
+        if (flag) {
+            document.getElementById("mBody").innerHTML = "添加失败，有内容为空！"
+            return
+        }
+        for (let i = 0; i < 3; i++) {
+            if (target[9 + i] > target[5 + i]) {
+                document.getElementById("mBody").innerHTML = "添加失败，剩余座位数不得多于总座位数！"
+                return
+            }
+        }
+        if (document.getElementById("flight3I6").value < document.getElementById("flight3I4").value) {
+            document.getElementById("mBody").innerHTML = "添加失败，抵达时间不得早于起飞时间！"
+            return
+        } else if (document.getElementById("flight3I6").value === document.getElementById("flight3I4").value) {
+            if (document.getElementById("flight3I7").value < document.getElementById("flight3I5").value) {
+                document.getElementById("mBody").innerHTML = "添加失败，抵达时间不得早于起飞时间！"
+                return
+            }
+        }
+
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/add_flight')
+        let msg = document.getElementById("addFlightI").value
+        for (let i = 2; i <= 7; i++) {
+            msg += ";" + document.getElementById("addFlightI" + i).value
+        }
+        for (let i = 1; i < 12; i++) {
+            if (i % 4 === 0) continue
+            msg += ';' + target[i].innerHTML
+        }
+        console.info(encodeURIComponent(msg))
+        xhttp.setRequestHeader("msg", encodeURIComponent(msg))
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                let mBody = document.getElementById("mBody")
+                if (xhttp.responseText === "") {
+                    document.getElementById("mBody").innerHTML = "航班添加成功！"
+                } else {
+                    document.getElementById("mBody").innerHTML = xhttp.responseText
+                }
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function checkNumber(code) {
+        return code <= 105 && code >= 96 || code === 8 || code >= 48 && code <= 57;
+    }
+
+
+    function check() {
+        document.getElementById("mTitle").innerHTML = "管理员注册结果"
+        let mBody = document.getElementById("mBody")
+        if (document.getElementById('anameI').value === '') {
+            mBody.innerHTML = "用户名不得为空"
+            return
+        } else if (document.getElementById('anameI').value.length < 2) {
+            mBody.innerHTML = "用户名要求2~40位"
+            return
+        }
+        if (document.getElementById('apwdI').value === '') {
+            mBody.innerHTML = "密码不得为空"
+            return
+        } else if (document.getElementById('apwdI').value.length < 8) {
+            mBody.innerHTML = "密码要求8~40位"
+            return
+        } else {
+            let passwd = document.getElementById('apwdI').value
+            let letter = false, number = false
+            for (let i = 0; i < passwd.length; i++) {
+                if (letter && number) break
+                if (!isNaN(Number(passwd[i])))
+                    number = true
+                else if (passwd[i] >= 'a' && passwd[i] <= 'z' || passwd[i] >= 'A' && passwd[i] <= 'Z')
+                    letter = true
+            }
+            if (!letter || !number) {
+                mBody.innerHTML = "需要包含字母和数字两种字符"
+                return
+            }
+        }
+        if (document.getElementById('apwd2I').value !== document.getElementById('apwdI').value) {
+            mBody.innerHTML = "两次密码输入不同"
+            return
+        }
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/post_registerA')
+        xhttp.setRequestHeader("uname", document.getElementById("anameI").value)
+        xhttp.setRequestHeader("pwd", document.getElementById("apwdI").value)
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                if (xhttp.responseText === "") {
+                    document.getElementById("mBody").innerHTML = "管理员注册成功！"
+                } else document.getElementById("mBody").innerHTML = xhttp.responseText
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function bill_print() {
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/all_bill_print')
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                billP = xhttp.responseText.split(';')
+                document.getElementById("tt5").innerHTML = ""
+                if (document.getElementById("billI") != null)
+                    document.getElementById("billI").remove()
+                if (billP.length === 1) {
+                    let tag = "<div id='billI' class=' p-5 m-5 fs-3 text-center'>未搜索到订单信息</div>"
+                    document.getElementById("billForm").insertAdjacentHTML("beforeend", tag)
+                } else {
+                    for (let i = 0; i < billP.length / 10; i++) {
+                        let tag = "<tr style='line-height:36px' ><td>" + billP[10 * i] + "</td><td>" + billP[10 * i + 1] +
+                            "</td><td>" + billP[10 * i + 2] + "</td><td>" + billP[10 * i + 3] +
+                            " &nbsp;<i class='fas fa-angle-double-right'></i>&nbsp; " + billP[10 * i + 4] + "</td><td>" +
+                            billP[10 * i + 5] + " &nbsp;<i class='fas fa-angle-double-right'></i>&nbsp; " + billP[10 * i + 6] +
+                            "</td><td>" + billP[10 * i + 7] + "</td><td>" + billP[10 * i + 8] + "</td><td>" + billP[10 * i + 9];
+                        tag += "</td><td><div><button class='btn btn-warning me-1' data-bs-toggle='modal' " +
+                            "data-bs-target='#bill2M' type='button' onclick='change_bill(" + i + ")'>修改</button>" +
+                            "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#Modal' " +
+                            "type='button' onclick='del_bill(" + i + ")'>取消</button></td></div></tr>";
+                        document.getElementById("tt5").insertAdjacentHTML("beforeend", tag)
+                    }
+                }
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function change_bill(index) {
+        document.getElementById("bill2I").value = billP[10 * index]
+        document.getElementById("bill2I2").value = billP[10 * index + 2]
+        switch (billP[10 * index + 7]) {
+            case "头等舱":
+                document.getElementById("bill2I3").selectedIndex = 0;
+                break;
+            case "商务舱":
+                document.getElementById("bill2I3").selectedIndex = 1;
+                break;
+            case "经济舱":
+                document.getElementById("bill2I3").selectedIndex = 2;
+                break;
+        }
+        if (billP[10 * index + 9] === "是") {
+            document.getElementById("bill2I4").checked = true
+        } else {
+            document.getElementById("bill2I5").checked = true
+        }
+    }
+
+
+    function change_bill2() {
+        let msg = document.getElementById("bill2I").value + ";" +
+            document.getElementById("bill2I2").value + ";" +
+            document.getElementById("bill2I3").value + ";"
+        if (document.getElementById("bill2I4").checked === true)
+            msg += "是"
+        else msg += "否"
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/change_bill')
+        xhttp.setRequestHeader("msg", encodeURIComponent(msg))
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                document.getElementById("mTitle").innerHTML = '订单修改结果'
+                if (xhttp.responseText === "") {
+                    setTimeout(() => {
+                        let tag = "<div class='alert fade show alert-success alert-dismissible' ><button type='button' class='btn-close'" +
+                            " data-bs-dismiss='alert'></button><strong>订单修改成功，立即刷新界面更新内容！</strong></div>"
+                        document.getElementById("billForm").insertAdjacentHTML('beforebegin', tag)
+                    }, 200)
+                } else {
+                    setTimeout(() => {
+                        let tag = "<div class='alert fade show alert-danger alert-dismissible' ><button type='button' class='btn-close'" +
+                            " data-bs-dismiss='alert'></button><strong>修改失败，" + xhttp.responseText + "</strong></div>"
+                        document.getElementById("billForm").insertAdjacentHTML('beforebegin', tag)
+                    }, 200)
+                }
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function del_bill(index) {
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/del_bill')
+        xhttp.setRequestHeader("flight", billP[10 * index])
+        xhttp.setRequestHeader("id", billP[10 * index + 2])
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                let mBody = document.getElementById("mBody")
+                document.getElementById("mTitle").innerHTML = '订单删除结果'
+                if (xhttp.responseText === "")
+                    mBody.innerHTML = "订单删除成功"
+                else mBody.innerHTML = xhttp.responseText
+            }
+        }
+        xhttp.send()
+    }
+
+
+    function add_bill() {
+        document.getElementById("mTitle").innerHTML = "订单添加结果"
+        let mBody = document.getElementById("mBody")
+        if (document.getElementById("bill3I").value === "") {
+            mBody.innerHTML = "添加失败，航班号不得为空！"
+            return
+        }
+        let ID = document.getElementById("bill3I2").value
+        if (ID.length !== 18) {
+            mBody.innerHTML = "添加失败，身份证长度错误！"
+            return
+        } else if (isNaN(Number(ID.slice(0, 17))) || (isNaN(Number(ID[17])) && ID[17] !== 'X')) {
+            mBody.innerHTML = "身份证号格式错误！"
+            return
+        }
+        let xhttp = new XMLHttpRequest()
+        xhttp.open('POST', '/add_bill')
+        let msg = document.getElementById("bill3I").value + ";"
+            + document.getElementById("bill3I2").value + ";"
+            + document.getElementById("bill3I3").value + ";"
+        if (document.getElementById("bill3I4").checked === true)
+            msg += "是"
+        else msg += "否"
+        xhttp.setRequestHeader("X-CSRFToken", csrftoken)
+        xhttp.setRequestHeader("msg", encodeURIComponent(msg))
+
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                let mBody = document.getElementById("mBody")
+                document.getElementById("mTitle").innerHTML = '订单添加结果'
+                if (xhttp.responseText === "")
+                    mBody.innerHTML = "订单添加成功"
+                else mBody.innerHTML = xhttp.responseText
+            }
+        }
+        xhttp.send()
+
+
+    }
+</script>
+
